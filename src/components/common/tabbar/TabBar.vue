@@ -30,5 +30,6 @@ export default {
     right: 0;
     bottom: 0;
     box-shadow: 0 -2px 2px rgba(136, 134, 134, 0.2);
+    z-index: 99;
   }
 </style>

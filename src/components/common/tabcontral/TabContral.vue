@@ -31,7 +31,8 @@ export default {
 
    methods: {
      btnclick(index){
-       this.isactive = index
+       this.isactive = index;
+       this.$emit("tabClick",index)
      }
    }
 }

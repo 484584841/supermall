@@ -3,11 +3,14 @@
   <nav-bar class="home-nav">
     <template #center>购物街</template>
   </nav-bar>
-  <home-swiper :banners="banners"></home-swiper>
-  <home-recommend :recommends="recommends"></home-recommend>
-  <feature-view></feature-view>
-  <tab-contral class="tab-contral" :title="['流行','新款','精选']"  @tabClick="tabClick"></tab-contral>
-  <goods-list :goods="goods[currentType].list" ></goods-list>
+  <scroll class="content" ref="scroll" :probe-type="3" @pscroll="pscroll" :pullUpLode="true" @scrollup="scrollup">
+    <home-swiper :banners="banners"></home-swiper>
+    <home-recommend :recommends="recommends"></home-recommend>
+    <feature-view></feature-view>
+    <tab-contral class="tab-contral" :title="['流行','新款','精选']"  @tabClick="tabClick(position)"></tab-contral>
+    <goods-list :goods="goods[currentType].list" ></goods-list>
+  </scroll>
+  <back-top @click="backClick" v-show="isBackTop"></back-top>
  </div>
 </template>
 
@@ -21,6 +24,8 @@ import TabContral from '../../components/common/tabcontral/TabContral.vue';
 
 import {getHomeMultiDate,getHomeData} from "network/home"
 import GoodsList from '../../components/content/Goods/goodsList.vue';
+import Scroll from '../../components/common/scroll/Scroll.vue';
+import BackTop from '../../components/content/backTop/backTop.vue';
 
 export default {
    data () {
@@ -32,7 +37,8 @@ export default {
           'new':{page:0,list:[]},
           'sell':{page:0,list:[]}
         },
-        currentType:'pop'
+        currentType:'pop',
+        isBackTop:false
       };
    },
 
@@ -41,7 +47,9 @@ export default {
       HomeRecommend,
       FeatureView,
       TabContral,
-      GoodsList
+      GoodsList,
+      Scroll,
+      BackTop
    },
   created(){
     this.getHomeMultiDate()
@@ -65,6 +73,7 @@ export default {
           this.currentType = 'sell'
           break;
       }
+      
      },
 
      getHomeMultiDate(){
@@ -79,9 +88,18 @@ export default {
           this.goods[type].list.push(...res.data.list)
           // console.log(res);
           this.goods[type].page += 1
-        }
-       )
-     }
+          this.$refs.scroll.bs.finishPullUp()
+        })
+     },
+     backClick(){
+       this.$refs.scroll.bs.scrollTo(0,0,500)
+      },
+      pscroll(position){
+        this.isBackTop = position.y < -1000
+      },
+      scrollup(){
+        this.getHomeData(this.currentType)
+      }
    }
 }
 </script>
@@ -89,6 +107,8 @@ export default {
   #home{
     padding-top: 44px;
     padding-bottom: 49px;
+    height: 100vh;
+    position: relative;
   }
   .home-nav{
     position: fixed;
@@ -100,8 +120,15 @@ export default {
     z-index: 9;
   }
   .tab-contral{
-    position: sticky;
+    /* position: sticky; */
     top: 44px;
     z-index: 9;
+  }
+  .content{
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 </style>

@@ -41,7 +41,6 @@ export default {
         isBackTop:false
       };
    },
-
    components: {
      NavBar,HomeSwiper,
       HomeRecommend,

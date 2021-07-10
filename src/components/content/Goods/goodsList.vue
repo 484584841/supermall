@@ -22,7 +22,9 @@ export default {
    },
    components: {GoodsListItem},
 
-   computed: {},
+   computed: {
+     
+   },
 
    methods: {}
 }

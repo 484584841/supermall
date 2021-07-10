@@ -1,7 +1,11 @@
 <template>
   <div class="aa">
-    <router-view></router-view>
-    <main-tab-bar class="tabbar"></main-tab-bar>
+    <router-view v-slot="{ Component }">
+      <keep-alive exclude="Detail">
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
+  <main-tab-bar class="tabbar"></main-tab-bar>
   </div>
 </template>
 
@@ -18,7 +22,8 @@ export default {
 
 <style>
 .tabbar{
-  z-index: 99;
+  position: relative;
+  z-index: 8;
  }
  
   @import "./assets/css/base.css"

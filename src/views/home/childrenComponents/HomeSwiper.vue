@@ -2,7 +2,7 @@
      <swiper>
        <swiper-item v-for="item in banners" :key="item">
          <a :href="banners.link" >
-           <img :src="item.image" alt="">
+           <img :src="item.image" alt="" @load="imgLode">
          </a>
        </swiper-item>
     </swiper>
@@ -23,7 +23,7 @@ export default {
   },
    data () {
       return {
-
+        isLode:false
       };
    },
 
@@ -31,7 +31,14 @@ export default {
 
    computed: {},
 
-   methods: {}
+   methods: {
+     imgLode(){
+       if(!this.isLode){
+         this.$emit("swiperImgLode")
+         this.isLode = true
+       }
+     }
+   }
 }
 </script>
 <style lang='css' scoped>

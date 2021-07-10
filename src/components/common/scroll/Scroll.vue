@@ -1,6 +1,6 @@
 <template>
    <div ref="wrapper" class="wrapper">
-     <div>
+     <div class="content">
        <slot></slot>
      </div>
    </div>
@@ -22,7 +22,7 @@ export default {
        type:Number,
        default:0
      },
-     pullUpLode:{
+     pullUpLoad:{
        type:Boolean,
        default:false
      }
@@ -32,20 +32,32 @@ export default {
        observeDOM:true,
        click:true,
        probeType:this.probeType,
-       pullUpLoad:this.pullUpLode
+       pullUpLoad:this.pullUpLoad
+       
      })
-     this.bs.on('scroll',(position)=>{
-       this.$emit('pscroll',position)
-     })
-     this.bs.on('pullingUp',()=>{
-       this.$emit('scrollup')
-     })
+
+     if (this.probeType === 2 || this.probeType === 3) {
+        this.bs.on('scroll', (position) => {
+          this.$emit('pscroll', position)
+        })
+      }
+
+      if (this.pullUpLoad) {
+        this.bs.on('pullingUp', () => {
+          this.$emit('scrollup')
+        })
+      }
+      
    },
    components: {},
 
    computed: {},
 
-   methods: {}
+   methods: {
+     refresh(){
+       this.scroll && this.scroll.refresh()
+     }
+   }
 }
 </script>
 <style lang='css' scoped>

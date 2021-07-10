@@ -1,6 +1,6 @@
 <template>
-   <div class="goods-item">
-     <img :src="goodsItem.show.img" alt="">
+   <div class="goods-item" @click="itemClick">
+     <img :src="showImg" alt="" @load="setup">
      <div class="goods-info">
        <p>{{goodsItem.title}}</p>
        <span class="price">￥:{{goodsItem.price}}</span>
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import bus from "vue3-eventbus"
+
 export default {
    data () {
       return {
@@ -26,9 +28,20 @@ export default {
   },
    components: {},
 
-   computed: {},
+   computed: {
+     showImg(){
+       return this.goodsItem.image || this.goodsItem.show.img
+     }
+   },
 
-   methods: {}
+   methods: {
+     itemClick(){
+       this.$router.push('/detail/' + this.goodsItem.iid)
+     }
+   },
+   setup(){
+      bus.emit('imgLode',{});
+   }
 }
 </script>
 <style lang='css' scoped>

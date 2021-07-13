@@ -1,5 +1,5 @@
 <template>
-   <div ref="wrapper" class="wrapper">
+   <div ref="wrapper">
      <div class="content">
        <slot></slot>
      </div>
@@ -56,9 +56,20 @@ export default {
    methods: {
      refresh(){
        this.scroll && this.scroll.refresh()
-     }
-   }
-}
+     },
+    scrollTo(x, y, time = 300) {
+      this.scroll.scrollTo(x, y, time)
+    },
+    finishPullUp() {
+      this.scroll && this.scroll.finishPullUp();
+    }
+    },
+    // watch: {
+    //   data() {
+    //     setTimeout(this.refresh, 20)
+    //   }
+    // }
+  }
 </script>
 <style lang='css' scoped>
 

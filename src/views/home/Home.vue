@@ -12,7 +12,7 @@
   <scroll 
       class="content" 
       ref="scroll" 
-      :probe-type="3" 
+      :probe-type="3"  
       @pscroll="pscroll" 
       :pullUpLoad="true" 
       @scrollup="scrollup">
@@ -22,7 +22,7 @@
     <tab-contral  :title="['流行','新款','精选']"  @tabClick="tabClick" ref="tabContral2" ></tab-contral>
     <goods-list :goods="goods[currentType].list" ></goods-list>
   </scroll>
-  <back-top @click.native="backClick" v-show="isBackTop"></back-top>
+  <!-- <back-top @click.native="backClick" v-show="isBackTop"></back-top> -->
  </div>
 </template>
 
@@ -39,7 +39,7 @@ import TabContral from '../../components/common/tabcontral/TabContral.vue';
 import {getHomeMultiDate,getHomeData} from "network/home"
 import GoodsList from '../../components/content/Goods/goodsList.vue';
 import Scroll from '../../components/common/scroll/Scroll.vue';
-import BackTop from '../../components/content/backTop/backTop.vue';
+// import BackTop from '../../components/content/backTop/backTop.vue';
 import {debounce} from "components/common/utils.js"
 export default {
   name:"Home",
@@ -53,7 +53,7 @@ export default {
           'sell':{page:0,list:[]}
         },
         currentType:'pop',
-        isBackTop:false,
+        // isBackTop:false,
         tabOffsetTop:0,
         isTabContralShow:false,
         saveY:0
@@ -67,7 +67,7 @@ export default {
       TabContral,
       GoodsList,
       Scroll,
-      BackTop
+      // BackTop
    },
   created(){
     this.getHomeMultiDate()
@@ -82,12 +82,12 @@ export default {
     })
   },
   activated(){
+    // setTimeout(()=>{
+      this.$refs.scroll.bs.scrollTo(0,this.saveY,10)
+    // },120)
     this.$refs.scroll.refresh()
-    // this.$parent.$el.scrollTo(0,this.saveY,100)//表示获取router-view上一级的scrollTop
-    this.$refs.scroll.bs.scrollTo(0,this.saveY,1000)
   },
   deactivated(){
-
     this.saveY = this.$refs.scroll.bs.y
   },
    computed: {},
@@ -120,13 +120,14 @@ export default {
         //  console.log(res);
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
-          this.$refs.scroll.bs.finishPullUp()
-          this.$refs.scroll.bs.refresh()
+          this.$refs.scroll.finishPullUp()
+          this.$refs.scroll.refresh()
         })
      },
-     backClick(){
-       this.$refs.scroll.bs && this.$refs.scroll.bs.scrollTo(0,0,500)
-     },
+    //  backClick(){
+    //    console.log(1);
+    //    this.$refs.scroll && this.$refs.scroll.scrollTo(0,0,500)
+    //  },
      pscroll(position){
         this.isBackTop = (-position.y) > 1000
         this.isTabContralShow = (-position.y) > this.tabOffsetTop
@@ -138,6 +139,7 @@ export default {
      },
      swiperImgLode(){
         this.tabOffsetTop = this.$refs.tabContral2.$el.offsetTop
+        // return true
      }
     }
    }
@@ -145,16 +147,26 @@ export default {
 </script>
 <style lang='css' scoped>
   #home {
-    /*padding-top: 44px;*/
-    height: 100vh;
+    /* height: calc(100vh - 58px - 44px);
+    position: relative; */
     position: relative;
-    overflow: hidden;
+		height: 100vh;
   }
 
+  .content {   
+    /* overflow: hidden;
+    height: 100%; */
+    overflow: hidden;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 44px;
+		bottom: 49px;
+  }
   .home-nav {
     background-color: var(--color-tint);
     color: #fff;
-
+    overflow: hidden;
     /* 在使用浏览器原生滚动时, 为了让导航不跟随一起滚动*/ 
     /* position: fixed;
     left: 0;
@@ -163,14 +175,6 @@ export default {
     z-index: 9; */
   }
 
-  .content {
-    overflow: hidden;
-    position: absolute;
-    top: 44px;
-    bottom: 49px;
-    left: 0;
-    right: 0;
-  }
 
   .tab-contral-show {
     position: relative;

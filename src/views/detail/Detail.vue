@@ -8,10 +8,12 @@
          <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
          <detail-param-info :paramInfo="paramInfo" ref="param"></detail-param-info>
          <detail-comment-info :commentInfo="commentInfo" ref="comment"></detail-comment-info>
-         <goods-list :goods='recommend' ref="recommend"></goods-list>
+         <goods-list :goods='recommend' ref="recommend"></goods-list>   
      </scroll>
+     <toast :ismessage="message" :isshow="show"></toast>
      <detail-bottom-bar @addGoods="addGoods"></detail-bottom-bar>
      <back-top @click.native="backClick" v-show="isBackTop"></back-top>
+     
    </div>
 </template>
 
@@ -29,7 +31,8 @@ import GoodsList from '../../components/content/Goods/goodsList.vue';
 import {debounce} from "components/common/utils.js"
 import DetailBottomBar from './childComponent/DetailBottomBar.vue';
 import BackTop from '../../components/content/backTop/backTop.vue';
-
+import {mapActions} from "vuex"
+import Toast from '../../components/common/toast/Toast.vue';
 export default {
   name:"Detail",
    data () {
@@ -46,7 +49,9 @@ export default {
         debounceF:null,
         positionY:0,
         currentIndex:0,
-        isBackTop:false
+        isBackTop:false,
+        show:false,
+        message:"添加购物车成功！"
       };
    },
    created(){
@@ -76,9 +81,9 @@ export default {
      this.debounceF = debounce(()=>{
        this.TopY = []
        this.TopY.push(0)
-       this.TopY.push(this.$refs.param.$el.offsetTop)
-       this.TopY.push(this.$refs.comment.$el.offsetTop)
-       this.TopY.push(this.$refs.recommend.$el.offsetTop)
+       this.TopY.push(this.$refs.param.$el.offsetTop -44 )
+       this.TopY.push(this.$refs.comment.$el.offsetTop - 44)
+       this.TopY.push(this.$refs.recommend.$el.offsetTop- 44)
        this.TopY.push(Number.MAX_VALUE)
      },500)
    },
@@ -93,19 +98,21 @@ export default {
       DetailCommentInfo,
       GoodsList,
       DetailBottomBar,
-      BackTop
+      BackTop,
+      Toast
    },
 
    computed: {},
 
    methods: {
+     ...mapActions(["addCarList"]),
      backClick(){
        this.$refs.scroll.bs && this.$refs.scroll.bs.scrollTo(0,0,500)
      },
 
      titleClick(index){
       //  console.log(index);
-      this.$refs.scroll.bs.scrollTo(0,-this.TopY[index],1000)
+      this.$refs.scroll.bs.scrollTo(0,-this.TopY[index] ,1000)
      },
      imageLoad(){
        this.debounceF()
@@ -124,14 +131,25 @@ export default {
      },
      addGoods(){
        let product = {}
-      //  console.log(this.goods);
        product.price = this.goods.realPrice
        product.image = this.topImages[0]
        product.title = this.goods.title
        product.desc = this.goods.desc
        product.iid = this.iid
-
-       this.$store.commit('addCarList',product)
+      //  this.$store.dispatch('addCarList',product).then(res=>{
+      //    console.log(res);
+      //  })
+      this.addCarList(product).then(res=>{
+        this.show = true
+        setTimeout(()=>{
+          this.show = false
+        },2000)
+      },err=>{
+        this.show = true
+        setTimeout(()=>{
+          this.show = false
+        },2000)
+      })
      }
    }
 }
@@ -142,12 +160,12 @@ export default {
     z-index: 9;
     background-color: #fff;
     /* padding-bottom: 58px; */
-    height: 100vh;
+    height: calc(100vh - 58px - 44px);
   }
   .content{
     background-color: #fff;
-    height: calc(100% - 58px - 44px);
-
+    height: 100%;
+    overflow: hidden;
     /* overflow: hidden;
     position: absolute;
     top: 44px;

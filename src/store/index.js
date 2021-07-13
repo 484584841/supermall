@@ -7,18 +7,23 @@ export default createStore({
     carList: []
   },
   mutations: {
-    addCarList(state, payload) {
-      // state.carList.push(payload)
-      let oldProduct = state.carList.find(item => item.iid === payload.iid)
-      if (oldProduct) {
-        oldProduct.count = oldProduct.count + 1
-      } else {
-        payload.count = 1
-        state.carList.push(payload)
-        // console.log(payload);
-      }
+
+  },
+  actions: {
+    addCarList(context, payload) {
+      return new Promise((resolve, reject) => {
+        let oldProduct = context.state.carList.find(item => item.iid === payload.iid)
+        if (oldProduct) {
+          oldProduct.count = oldProduct.count + 1
+          resolve("当前商品数量加一")
+        } else {
+          payload.checked = true
+          payload.count = 1
+          context.state.carList.push(payload)
+          reject("添加了新的商品")
+        }
+      })
     }
   },
-  actions: {},
   modules: {}
 })
